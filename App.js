@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView, TouchableOpacity } from "react-native-web";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { 
   StyleSheet, 
   Text, 
@@ -30,6 +30,33 @@ export default function App() {
 
   //variable que utilzia el boton para empezar o parar el timer 
   const [isActive, setIsActive] = useState(false);
+
+  //ciclos de vida de un componente
+  //toma 2 parametros, una callback y un array de dependencias
+  //effecct solo activara si los valores dentro del array cambian
+  useEffect(() => {
+    let interval = null;
+
+    if(isActive){
+      //correr el timer
+      interval = setInterval(()=>{
+        setTime(time -1 );
+      }, 1000);
+    } else{
+      //limpiar el intervalo
+      clearInterval(interval);
+    }
+
+    //cuando llegue a 0, que se pare todo
+    if (time === 0){
+      setIsActive(false);
+      //acceder al estado previo
+      setIsWorking((prev) => !prev);
+      setTime(isWorking?300:1500);
+    }
+
+    return()=>clearInterval(interval);
+  }, [isActive, time]);
 
   function handleStartStop(){
     //es igual a lo contrario que teniamos antes
