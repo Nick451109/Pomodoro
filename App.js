@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import Header from "./src/components/Header";
 import Timer from "./src/components/Timer";
+import {Audio} from "expo-av";
 
 const colors = ["#F7DC6F", "#A2D9CE", "#D7BDE2"];
 
@@ -34,7 +35,17 @@ export default function App() {
     //es igual a lo contrario que teniamos antes
     //si el boton estaba en true, al darle click será false
     //si el boton estaba en start, al darle click, será stop
+    playSound();
     setIsActive(!isActive);
+  }
+
+  //sonido de boton
+  //debemos esperar a que se cargue el audio antes de poder tocarlo
+  async function playSound(){
+    const {sound} = await Audio.Sound.createAsync(
+      require("./assets/click.mp3")
+    );
+    await sound.playAsync();
   }
 
   return (
