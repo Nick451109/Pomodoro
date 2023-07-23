@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaView } from "react-native-web";
+import { SafeAreaView, TouchableOpacity } from "react-native-web";
 import { useState } from "react";
 import { 
   StyleSheet, 
@@ -9,6 +9,7 @@ import {
   Platform
 } from "react-native";
 import Header from "./src/components/Header";
+import Timer from "./src/components/Timer";
 
 const colors = ["#F7DC6F", "#A2D9CE", "#D7BDE2"];
 
@@ -23,20 +24,49 @@ export default function App() {
   //25 * 60 me da los segundos que tiene 25 minutos
   const [time, setTime] = useState(25 * 60);
 
-  //en que tiempo estamos (break, short break etc)
+  //en que "tiempo" estamos (break, short break etc)
   const[currentTime, setCurrentTime] = useState("POMO" | "SHORT" | "BREAK");
 
-  console.log(currentTime);
+  //variable que utilzia el boton para empezar o parar el timer 
+  const [isActive, setIsActive] = useState(false);
+
+  function handleStartStop(){
+    //es igual a lo contrario que teniamos antes
+    //si el boton estaba en true, al darle click será false
+    //si el boton estaba en start, al darle click, será stop
+    setIsActive(!isActive);
+  }
 
   return (
     //safe area solo para IOS 
     //paddingtop solo para android
     //statusbar, barra de hora, bateria etc (light, dark..)
     //<Header /> es mi componente
-    <SafeAreaView style={styles.container}>
-      <View style={{paddingTop: Platform.OS==="android" && 30}}>
+    //se pondra un color de fondo dependiendo del indice de "tiempo" en el cual nos encontremos
+
+    //se aplican componentes:
+    //Header, Timer
+    <SafeAreaView style={[styles.container, {backgroundColor: colors[currentTime]}]}>
+      <View style={{
+        flex:1,
+        paddingHorizontal:15, 
+        paddingTop: Platform.OS==="android" && 30
+        }}>
         <Text style={styles.text}>Pomodoro</Text>
-        <Header time={time}/>
+        
+        <Header 
+        currentTime={currentTime} 
+        setCurrentTime = {setCurrentTime}
+        setTime={setTime}
+        />
+
+        <Timer time={time}/>
+
+        <TouchableOpacity 
+        onPress={handleStartStop}
+        style={styles.button}>
+          <Text style={{color:"white", fontWeight:"bold"}}>{isActive? "STOP":"START"}</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -50,4 +80,11 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
   },
+  button:{
+    alignItems:"center",
+    backgroundColor:"#333333",
+    padding:15,
+    marginTop: 15,
+    borderRadius:15,
+  }
 });
